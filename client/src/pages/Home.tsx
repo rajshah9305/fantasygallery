@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ChevronDown, Play, Pause } from "lucide-react";
+import { ChevronDown, Play, Pause, Maximize } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const images = [
@@ -28,6 +28,7 @@ const images = [
 
 export default function Home() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isFullScreen, setIsFullScreen] = useState(false);
   const [isAutoPlay, setIsAutoPlay] = useState(true);
   const [scrollY, setScrollY] = useState(0);
 
@@ -84,10 +85,13 @@ export default function Home() {
               <img
                 src={`/${img}`}
                 alt={`Gallery ${idx + 1}`}
-                className="w-full h-full object-cover"
+                className="max-h-full max-w-full w-full h-full object-contain"
               />
               {/* Gradient Overlay */}
               <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/50" />
+              <Button onClick={() => setIsFullScreen(true)} variant="ghost" className="absolute bottom-4 right-4 text-white/80 hover:text-white z-20">
+                <Maximize className="w-5 h-5" />
+              </Button>
             </div>
           ))}
         </div>
@@ -119,15 +123,19 @@ export default function Home() {
       {/* Gallery Section */}
       <section id="gallery" className="relative py-20 bg-background">
         <div className="max-w-7xl mx-auto px-4">
+          <h2 className="text-3xl md:text-4xl font-bold mb-8 text-accent text-center">The Collection</h2>
           {/* Main Image Display */}
           <div className="mb-12">
-            <div className="relative w-full aspect-[3/4] md:aspect-[2/3] rounded-lg overflow-hidden shadow-2xl border-2 border-accent/30">
+            <div className="relative w-full h-[70vh] md:h-[80vh] lg:h-[90vh] rounded-lg overflow-hidden shadow-2xl border-2 border-accent/30 bg-black/50 flex items-center justify-center group">
               <img
                 src={`/${images[currentIndex]}`}
                 alt={`Gallery ${currentIndex + 1}`}
-                className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                className="max-h-full max-w-full w-full h-full object-contain transition-transform duration-500 group-hover:scale-[1.02]"
               />
               {/* Image Counter */}
+              <div className="absolute bottom-4 left-4 bg-black/60 text-foreground/90 px-4 py-2 rounded-lg text-sm font-semibold z-20 backdrop-blur-sm">
+                Image: Steampunk Fantasy Art #{currentIndex + 1}
+              </div>
               <div className="absolute top-4 right-4 bg-black/60 text-accent px-4 py-2 rounded-full text-sm font-semibold">
                 {currentIndex + 1} / {images.length}
               </div>
@@ -171,7 +179,7 @@ export default function Home() {
           </div>
 
           {/* Thumbnail Grid */}
-          <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-7 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">
             {images.map((img, idx) => (
               <button
                 key={idx}
@@ -185,7 +193,7 @@ export default function Home() {
                 <img
                   src={`/${img}`}
                   alt={`Thumbnail ${idx + 1}`}
-                  className="w-full h-full object-cover"
+                  className="max-h-full max-w-full w-full h-full object-contain"
                 />
               </button>
             ))}
@@ -213,6 +221,34 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Fullscreen Modal */}
+      {isFullScreen && (
+        <div
+          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
+          onClick={() => setIsFullScreen(false)}
+        >
+          <div
+            className="relative w-full h-full p-4 md:p-8"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="absolute top-4 right-4 text-white/80 hover:text-white z-50 p-2 rounded-full bg-black/50 hover:bg-black/80 transition-colors"
+              onClick={() => setIsFullScreen(false)}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+            <img
+              src={`/${images[currentIndex]}`}
+              alt={`Gallery ${currentIndex + 1}`}
+              className="w-full h-full object-contain"
+            />
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/60 text-white px-6 py-3 rounded-lg text-lg font-semibold backdrop-blur-sm">
+              Steampunk Fantasy Art #{currentIndex + 1}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Footer */}
       <footer className="py-8 bg-background border-t border-accent/20">
